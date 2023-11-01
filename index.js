@@ -36,8 +36,8 @@ const multer = require('multer');
 let cors = require('cors');
 app.use(cors());
 
-const book = require("./models/books");
-const account = require("./models/accounts");
+const book = require("./books");
+const account = require("./accounts");
 
 
 app.post(`/auth` , async function(req,res){
