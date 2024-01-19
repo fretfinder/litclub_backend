@@ -40,8 +40,8 @@ app.use(cors(
     }
 ));
 
-const book = require("./books");
-const account = require("./accounts");
+const book = require("./models/books");
+const account = require("./models/accounts");
 
 
 app.post(`/auth` , async function(req,res){
