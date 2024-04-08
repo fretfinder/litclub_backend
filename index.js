@@ -257,6 +257,25 @@ app.post('/user/bookmark/img', async function(req, res) {
         res.status(500).send('Server error');
     }
 });
+app.delete('/delete-book/:id', async function(req, res) {
+    const bookId = req.params.id;
+    try {
+        const deletedBook = await book.findByIdAndDelete(bookId);
+        console.log(deletedBook)
+        if (!deletedBook) {
+            return res.status(404).send('Книга не найдена');
+        }
+        // Удаление книги из списка книг текущего пользователя
+        const author = await account.findOneAndUpdate(
+            { 'login': deletedBook.author },
+            { $pull: { myBooks: deletedBook._id } }
+        );
+        res.sendStatus(200);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Ошибка сервера при удалении книги');
+    }
+    });
 app.post('/post-comment', async function(req,res){
     console.log(1)
     try{
