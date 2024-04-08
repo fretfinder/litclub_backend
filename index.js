@@ -1,48 +1,49 @@
 let express = require(`express`);
 let app = express();
-let port = 3005 || process.env.PORT;
-let mongoose = require('mongoose');
-require('dotenv').config()
-async function com() {
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error) {
-        console.log(error);
-        process.exit(1);
-    }
-}
-
-var options = {
-    dotfiles: 'ignore',
-    etag: false,
-    extensions: ['htm', 'html','css','js','ico','jpg','jpeg','png','svg'],
-    index: ['index.html'],
-    maxAge: '1m',
-    redirect: false
-}
-app.use(express.static('dist', options))
-
+let port = 3005;
 const bodyParser = require("body-parser");
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(bodyParser.json({limit: '10mb', extended: true}))
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
+app.listen(port, function () {
+    console.log(`http://localhost:${port}`);
+});
 
+let cors = require('cors');
+app.use(cors({ origin: 'https://lonely-kimono-eel.cyclic.app/' }));
 
 app.use(express.json());
 const multer = require('multer');
 
-let cors = require('cors');
-app.use(cors(
-    {
-        origin: ['https://lonely-kimono-eel.cyclic.app']
-    }
-));
+let mongoose = require('mongoose');
+const dayjs = require("dayjs");
+mongoose.connect('mongodb://127.0.0.1:27017/LitClub');
+const Schema = mongoose.Schema;
 
-const book = require("./models/books");
-const account = require("./models/accounts");
+const accountSchema = new Schema({
+    login: String,
+    pass: mongoose.Schema.Types.Mixed,
+    favbooks: [{ type: Schema.Types.ObjectId, ref: 'book' }],
+    recentRead: [{ type: Schema.Types.ObjectId, ref: 'book' }],
+    myBooks: [{ type: Schema.Types.ObjectId, ref: 'book' }],
+    bookmark: [{ type: Schema.Types.Mixed }],
+    showbookmark: String
+});
 
+const bookSchema = new Schema({
+    title: String,
+    content: String,
+    img: String,
+    popularity: { type: Number, default: 0 },
+    createdAt: Date,
+    author: String,
+    description: mongoose.Schema.Types.Mixed,
+    comments: Array
+});
+
+const account = mongoose.model('Account', accountSchema);
+const book = mongoose.model('Book', bookSchema);
 
 app.post(`/auth` , async function(req,res){
     let login = req.body.login;
@@ -72,9 +73,10 @@ app.post(`/auth` , async function(req,res){
         }
     }
 })
+
 app.get('/books', async function (req, res) {
     try {
-        let books = await book.find();
+        let books = await book.find({});
         res.send(books);
     } catch (error) {
         console.error(error);
@@ -291,8 +293,3 @@ app.post('/post-comment', async function(req,res){
     }
 
 })
-com().then(() => {
-    app.listen(port, () => {
-        console.log(`Listening http://localhost:${port}`);
-    });
-});
