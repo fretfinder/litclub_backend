@@ -37,7 +37,7 @@ let cors = require('cors');
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "http://litclub-project.online:5174/"
+    "http://89.111.131.69:5174/"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
