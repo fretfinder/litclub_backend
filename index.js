@@ -36,7 +36,7 @@ const multer = require('multer');
 let cors = require('cors');
 app.use(cors(
     {
-        origin: ['http://89.111.131.69:5000/']
+        origin: ['https://litclub-rho.vercel.app/']
     }
 ));
 
