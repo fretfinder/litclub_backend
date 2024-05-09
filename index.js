@@ -36,7 +36,7 @@ const multer = require('multer');
 let cors = require('cors');
 app.use(cors(
     {
-        origin: ['http://litclub-project.online:5174/']
+        origin: ['http://localhost:5174/']
     }
 ));
 
